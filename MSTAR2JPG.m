@@ -1,7 +1,7 @@
 clear
-ReadPath = 'D:\class\UCAS-AIR\project\00experiment\rawdata\EOC-D\train\ZSU_23_4\';
-SavePath = 'D:\class\UCAS-AIR\project\00experiment\data\EOC-D\train\ZSU_23_4\';
-FileType = '*.026';
+ReadPath = 'D:\class\UCAS-AIR\project\00experiment\rawdata\EOC-V\test\A10\';
+SavePath = 'D:\class\UCAS-AIR\project\00experiment\data\EOC-V\test\A10\';
+FileType = '*.020';
 Files = dir([ReadPath FileType]);
 NumberOfFiles = length(Files);
 for i = 1 : NumberOfFiles

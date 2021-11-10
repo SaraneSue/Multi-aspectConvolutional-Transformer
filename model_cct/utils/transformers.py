@@ -99,7 +99,6 @@ class TransformerEncoderLayer(Module):
         src = src + self.drop_path(self.dropout2(src2))
         return src
 
-
 class MaskedTransformerEncoderLayer(Module):
     """
     Inspired by torch.nn.TransformerEncoderLayer and timm.

@@ -63,21 +63,38 @@ def sequenceConstruction(path_list,aspect_list):
 
 
 if __name__ == '__main__':
-    dataTypes = ['train', 'test']
-    labels = os.listdir('./data/EOC-D/train/')
-    for dataType in dataTypes:
-        for label in labels:
-            jsonpath='./data/EOC-D/{}/{}/aspect.json'.format(dataType, label)
-            savepath='./data/EOC-D/{}/{}/sequence.json'.format(dataType, label)
+    # dataTypes = ['train', 'test']
+    # labels = os.listdir('./data/SOC/train/')
+    # for dataType in dataTypes:
+    #     for label in labels:
+    #         jsonpath='./data/SOC/{}/{}/aspect.json'.format(dataType, label)
+    #         savepath='./data/SOC/{}/{}/sequence10.json'.format(dataType, label)
+    #
+    #         with open(jsonpath, 'r', encoding = 'utf-8') as f:
+    #             aspect_data = json.load(f)
+    #         aspect_list = get_target_value('aspect', aspect_data, [])
+    #         path_list = get_target_value('path', aspect_data, [])
+    #
+    #         sequence=sequenceConstruction(path_list,aspect_list)
+    #         print(len(sequence))
+    #
+    #         with open(savepath, "w") as f:
+    #             json.dump(sequence,f)
+    #             print("write success")
 
-            with open(jsonpath, 'r', encoding = 'utf-8') as f:
-                aspect_data = json.load(f)
-            aspect_list = get_target_value('aspect', aspect_data, [])
-            path_list = get_target_value('path', aspect_data, [])
+    labels = os.listdir('./data/EOC-C/train/')
+    for label in labels:
+        jsonpath='./data/EOC-C/train/{}/aspect.json'.format(label)
+        savepath='./data/EOC-C/train/{}/sequence.json'.format(label)
 
-            sequence=sequenceConstruction(path_list,aspect_list)
-            print(len(sequence))
+        with open(jsonpath, 'r', encoding = 'utf-8') as f:
+            aspect_data = json.load(f)
+        aspect_list = get_target_value('aspect', aspect_data, [])
+        path_list = get_target_value('path', aspect_data, [])
 
-            with open(savepath, "w") as f:
-                json.dump(sequence,f)
-                print("write success")
+        sequence=sequenceConstruction(path_list,aspect_list)
+        print(len(sequence))
+
+        with open(savepath, "w") as f:
+            json.dump(sequence,f)
+            print("write success")
