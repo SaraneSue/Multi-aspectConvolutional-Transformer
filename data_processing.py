@@ -49,53 +49,54 @@ def readDataFromFile(path,save_path):
         }
 
 if __name__ == '__main__':
-    # dataTypes = ['train', 'test']
-    # labels = os.listdir('./rawdata/EOC-C/train/')
-    # for dataType in dataTypes:
-    #     for label in labels:
-    #         path = './rawdata/EOC-C/{}/{}'.format(dataType, label)
-    #         savepath = './data/EOC-C/{}/{}'.format(dataType, label)
-    #         if not os.path.exists(savepath):
-    #             os.makedirs(savepath)
-    #         jsonpath = './data/EOC-C/{}/{}/aspect.json'.format(dataType, label)
-    #
-    #         aspect = {}
-    #         flie_dir = os.listdir(path)
-    #         for i in range(0, len(flie_dir)):
-    #             file = flie_dir[i]
-    #             if not os.path.isdir(file):
-    #                 file_path = os.path.join(path, file)
-    #                 file_name = os.path.splitext(file)
-    #                 save_path = os.path.join(savepath, file_name[0])
-    #                 aspect[file_name[0]] = readDataFromFile(file_path, save_path)
-    #             else:
-    #                 print('Path error!')
-    #
-    #         aspect = json.dumps(aspect)
-    #         with open(jsonpath, "w", encoding='utf-8') as f:
-    #             f.write(aspect)
-    #             print("write success")
+    dataTypes = ['train', 'test']
+    labels = os.listdir('./rawdata/SOC/train/')
+    for dataType in dataTypes:
+        for label in labels:
+            path = './rawdata/SOC/{}/{}'.format(dataType, label)
+            savepath = './data/SOC/{}/{}'.format(dataType, label)
+            if not os.path.exists(savepath):
+                os.makedirs(savepath)
+            jsonpath = './data/SOC/{}/{}/aspect.json'.format(dataType, label)
 
-    labels = os.listdir('./rawdata/EOC-C/test/')
-    for label in labels:
-        path = './rawdata/EOC-C/test/{}'.format(label)
-        savepath = './data/EOC-C/test/{}'.format(label)
-        if not os.path.exists(savepath):
-            os.makedirs(savepath)
-        jsonpath = './data/EOC-C/test/{}/aspect.json'.format(label)
-        aspect = {}
-        flie_dir = os.listdir(path)
-        for i in range(0, len(flie_dir)):
-            file = flie_dir[i]
-            if not os.path.isdir(file):
-                file_path = os.path.join(path, file)
-                file_name = os.path.splitext(file)
-                save_path = os.path.join(savepath, file_name[0])
-                aspect[file_name[0]] = readDataFromFile(file_path, save_path)
-            else:
-                print('Path error!')
+            aspect = {}
+            flie_dir = os.listdir(path)
+            for i in range(0, len(flie_dir)):
+                file = flie_dir[i]
+                if not os.path.isdir(file):
+                    file_path = os.path.join(path, file)
+                    file_name = os.path.splitext(file)
+                    save_path = os.path.join(savepath, file_name[0])
+                    aspect[file_name[0]] = readDataFromFile(file_path, save_path)
+                else:
+                    print('Path error!')
 
-        aspect = json.dumps(aspect)
-        with open(jsonpath, "w", encoding='utf-8') as f:
-            f.write(aspect)
-            print("write success")
+            aspect = json.dumps(aspect)
+            with open(jsonpath, "w", encoding='utf-8') as f:
+                f.write(aspect)
+                print("write success")
+
+    # for EOC
+    # labels = os.listdir('./rawdata/EOC-C/test/')
+    # for label in labels:
+    #     path = './rawdata/EOC-C/test/{}'.format(label)
+    #     savepath = './data/EOC-C/test/{}'.format(label)
+    #     if not os.path.exists(savepath):
+    #         os.makedirs(savepath)
+    #     jsonpath = './data/EOC-C/test/{}/aspect.json'.format(label)
+    #     aspect = {}
+    #     flie_dir = os.listdir(path)
+    #     for i in range(0, len(flie_dir)):
+    #         file = flie_dir[i]
+    #         if not os.path.isdir(file):
+    #             file_path = os.path.join(path, file)
+    #             file_name = os.path.splitext(file)
+    #             save_path = os.path.join(savepath, file_name[0])
+    #             aspect[file_name[0]] = readDataFromFile(file_path, save_path)
+    #         else:
+    #             print('Path error!')
+    #
+    #     aspect = json.dumps(aspect)
+    #     with open(jsonpath, "w", encoding='utf-8') as f:
+    #         f.write(aspect)
+    #         print("write success")

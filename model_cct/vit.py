@@ -27,6 +27,8 @@ class ViTLite(nn.Module):
                  mlp_ratio=4.0,
                  num_classes=1000,
                  positional_embedding='learnable',
+                 sequence_len = 4,
+                 need_fc = True,
                  *args, **kwargs):
         super(ViTLite, self).__init__()
         assert img_size % kernel_size == 0, f"Image size ({img_size}) has to be" \
@@ -39,6 +41,7 @@ class ViTLite(nn.Module):
                                    max_pool=False,
                                    activation=None,
                                    n_conv_layers=1,
+                                   sequence_len=sequence_len,
                                    conv_bias=True)
 
         self.classifier = TransformerClassifier(
@@ -54,7 +57,8 @@ class ViTLite(nn.Module):
             num_heads=num_heads,
             mlp_ratio=mlp_ratio,
             num_classes=num_classes,
-            positional_embedding=positional_embedding
+            positional_embedding=positional_embedding,
+            need_fc=need_fc
         )
 
     def forward(self, x):
@@ -63,13 +67,14 @@ class ViTLite(nn.Module):
 
 
 def _vit_lite(arch, pretrained, progress,
-              num_layers, num_heads, mlp_ratio, embedding_dim,
+              num_layers, num_heads, mlp_ratio, embedding_dim, sequence_len = 4,
               kernel_size=4, *args, **kwargs):
     model = ViTLite(num_layers=num_layers,
                     num_heads=num_heads,
                     mlp_ratio=mlp_ratio,
                     embedding_dim=embedding_dim,
                     kernel_size=kernel_size,
+                    sequence_len = sequence_len,
                     *args, **kwargs)
 
     if pretrained and arch in model_urls:
@@ -185,4 +190,16 @@ def vit_7_4_32_sine(pretrained=False, progress=False,
                  kernel_size=4,
                  img_size=img_size, positional_embedding=positional_embedding,
                  num_classes=num_classes,
+                 *args, **kwargs)
+
+@register_model
+def vit_4_16_64_sine(pretrained=False, progress=False,
+                    img_size=64, positional_embedding='sine', num_classes=10,
+                    *args, **kwargs):
+    return vit_4('vit_4_16_64_sine', pretrained, progress,
+                 kernel_size=16,
+                 img_size=img_size, positional_embedding=positional_embedding,
+                 num_classes=num_classes,
+                 n_input_channels=1,
+                 sequence_len = 1,
                  *args, **kwargs)

@@ -49,6 +49,7 @@ class CCT(nn.Module):
                  mlp_ratio=4.0,
                  num_classes=1000,
                  positional_embedding='learnable',
+                 need_fc=True,
                  *args, **kwargs):
         super(CCT, self).__init__()
 
@@ -78,7 +79,8 @@ class CCT(nn.Module):
             num_heads=num_heads,
             mlp_ratio=mlp_ratio,
             num_classes=num_classes,
-            positional_embedding=positional_embedding
+            positional_embedding=positional_embedding,
+            need_fc=need_fc
         )
 
     def forward(self, x):
@@ -213,12 +215,13 @@ def cct_6_7x3_224_sine(pretrained=False, progress=False,
 
 @register_model
 def cct_6_7x3_64_sine(pretrained=False, progress=False,
-                       img_size=64, positional_embedding='sine', num_classes=10,
+                       img_size=64, positional_embedding='sine', num_classes=10,need_fc=True,
                        *args, **kwargs):
     return cct_6('cct_6_7x3_64_sine', pretrained, progress,
                  kernel_size=7, n_conv_layers=3,
                  img_size=img_size, positional_embedding=positional_embedding,
                  num_classes=num_classes,
+                 need_fc=need_fc,
                  *args, **kwargs)
 
 @register_model

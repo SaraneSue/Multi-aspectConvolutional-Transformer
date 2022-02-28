@@ -1,0 +1,5 @@
+runs/
+data/
+zip/
+best_model/
+*.pyc
