@@ -3,3 +3,4 @@ data/
 zip/
 best_model/
 *.pyc
+.idea/
