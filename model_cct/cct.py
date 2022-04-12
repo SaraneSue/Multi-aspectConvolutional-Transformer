@@ -85,7 +85,8 @@ class CCT(nn.Module):
 
     def forward(self, x):
         x = self.tokenizer(x)
-        return self.classifier(x)
+        x = self.classifier(x)
+        return x
 
 
 def _cct(arch, pretrained, progress,

@@ -54,10 +54,10 @@ if __name__ == '__main__':
     for dataType in dataTypes:
         for label in labels:
             path = './rawdata/SOC/{}/{}'.format(dataType, label)
-            savepath = './data/SOC/{}/{}'.format(dataType, label)
+            savepath = './data/SOC-128/{}/{}'.format(dataType, label)
             if not os.path.exists(savepath):
                 os.makedirs(savepath)
-            jsonpath = './data/SOC/{}/{}/aspect.json'.format(dataType, label)
+            jsonpath = './data/SOC-128/{}/{}/aspect.json'.format(dataType, label)
 
             aspect = {}
             flie_dir = os.listdir(path)

@@ -76,6 +76,7 @@ class TransformerClassifier(Module):
                  stochastic_depth=0.1,
                  positional_embedding='learnable',
                  need_fc=True,
+                 use_cls_token = True,
                  sequence_length=None):
         super().__init__()
         positional_embedding = positional_embedding if \
@@ -85,12 +86,13 @@ class TransformerClassifier(Module):
         self.sequence_length = sequence_length
         self.seq_pool = seq_pool
         self.need_fc = need_fc
+        self.use_cls_token = use_cls_token
 
         assert sequence_length is not None or positional_embedding == 'none', \
             f"Positional embedding is set to {positional_embedding} and" \
             f" the sequence length was not specified."
 
-        if not seq_pool:
+        if (not seq_pool) and use_cls_token:
             sequence_length += 1
             self.class_emb = Parameter(torch.zeros(1, 1, self.embedding_dim),
                                        requires_grad=True)
@@ -124,7 +126,7 @@ class TransformerClassifier(Module):
         if self.positional_emb is None and x.size(1) < self.sequence_length:
             x = F.pad(x, (0, 0, 0, self.n_channels - x.size(1)), mode='constant', value=0)
 
-        if not self.seq_pool:
+        if (not self.seq_pool) and self.use_cls_token:
             cls_token = self.class_emb.expand(x.shape[0], -1, -1)
             x = torch.cat((cls_token, x), dim=1)
 
@@ -139,7 +141,7 @@ class TransformerClassifier(Module):
 
         if self.seq_pool:
             x = torch.matmul(F.softmax(self.attention_pool(x), dim=1).transpose(-1, -2), x).squeeze(-2)
-        else:
+        elif self.use_cls_token:
             x = x[:, 0]
         if self.need_fc:
             x = self.fc(x)

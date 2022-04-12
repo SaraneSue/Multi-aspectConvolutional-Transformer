@@ -80,11 +80,11 @@ def MoreSequenceConstruction(path_list,aspect_list):
 
 if __name__ == '__main__':
     dataTypes = ['train', 'test']
-    labels = os.listdir('./data/SOC/train/')
+    labels = os.listdir('./data/SOC-128/train/')
     for dataType in dataTypes:
         for label in labels:
-            jsonpath='./data/SOC/{}/{}/aspect.json'.format(dataType, label)
-            savepath='./data/SOC/{}/{}/sequence.json'.format(dataType, label)
+            jsonpath='./data/SOC-128/{}/{}/aspect.json'.format(dataType, label)
+            savepath='./data/SOC-128/{}/{}/sequence.json'.format(dataType, label)
 
             with open(jsonpath, 'r', encoding = 'utf-8') as f:
                 aspect_data = json.load(f)
