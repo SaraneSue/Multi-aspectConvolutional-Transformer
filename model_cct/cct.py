@@ -3,6 +3,7 @@ import torch.nn as nn
 from .utils.transformers import TransformerClassifier
 from .utils.tokenizer import Tokenizer
 from .utils.helpers import pe_check
+from .resnet import resnet18
 
 try:
     from timm.models.registry import register_model
@@ -50,28 +51,41 @@ class CCT(nn.Module):
                  num_classes=1000,
                  positional_embedding='learnable',
                  need_fc=True,
+                 sequence_len=4,
+                 arch="",
                  *args, **kwargs):
         super(CCT, self).__init__()
 
-        self.tokenizer = Tokenizer(n_input_channels=n_input_channels,
-                                   n_output_channels=embedding_dim,
-                                   kernel_size=kernel_size,
-                                   stride=stride,
-                                   padding=padding,
-                                   pooling_kernel_size=pooling_kernel_size,
-                                   pooling_stride=pooling_stride,
-                                   pooling_padding=pooling_padding,
-                                   max_pool=True,
-                                   activation=nn.ReLU,
-                                   n_conv_layers=n_conv_layers,
-                                   conv_bias=False)
+        self.sequence_len = sequence_len
+        self.n_output_channels = embedding_dim
+        self.class_num = num_classes
+        self.conv = nn.Conv2d(embedding_dim, 10,
+                              kernel_size=(1, 1))
+        self.softmax = nn.Softmax(dim=1)
+
+        if arch.startswith("cct_4"):
+            self.tokenizer = resnet18()
+        else:
+            self.tokenizer = Tokenizer(n_input_channels=n_input_channels,
+                                       n_output_channels=embedding_dim,
+                                       kernel_size=kernel_size,
+                                       stride=stride,
+                                       padding=padding,
+                                       pooling_kernel_size=pooling_kernel_size,
+                                       pooling_stride=pooling_stride,
+                                       pooling_padding=pooling_padding,
+                                       max_pool=True,
+                                       activation=nn.ReLU,
+                                       n_conv_layers=n_conv_layers,
+                                       conv_bias=False)
 
         self.classifier = TransformerClassifier(
-            sequence_length=self.tokenizer.sequence_length(n_channels=n_input_channels,
+            sequence_length=4 if arch.startswith("cct_4") else self.tokenizer.sequence_length(n_channels=n_input_channels,
                                                            height=img_size,
                                                            width=img_size),
             embedding_dim=embedding_dim,
-            seq_pool=True,
+            seq_pool=False,
+            use_cls_token=False,
             dropout=dropout,
             attention_dropout=attention_dropout,
             stochastic_depth=stochastic_depth,
@@ -86,8 +100,36 @@ class CCT(nn.Module):
     def forward(self, x):
         x = self.tokenizer(x)
         x = self.classifier(x)
-        return x
+        # return x
 
+        # batch_size = x.shape[0]
+        # x=x.reshape((batch_size, self.n_output_channels, 1, 1))
+        # x=self.conv(x).reshape((batch_size, self.class_num))
+        # return x
+
+        allx = x
+        batch_size = x.shape[0]
+        vote = None
+        for i in range(0, self.sequence_len):
+            x = allx[:, i:i + 1].reshape((batch_size, self.n_output_channels, 1, 1))
+            # x = self.conv(x).reshape((batch_size, self.class_num))
+            if vote is None:
+                vote = x
+            else:
+                vote += x
+        return self.conv(vote/4).reshape((batch_size, self.class_num))
+
+        # allx = x
+        #         # batch_size = x.shape[0]
+        #         # vote = None
+        #         # for i in range(0, self.sequence_len):
+        #         #     x = allx[:, i:i + 1].reshape((batch_size, self.n_output_channels, 1, 1))
+        #         #     x = self.conv(x).reshape((batch_size, self.class_num))
+        #         #     if vote is None:
+        #         #         vote = x
+        #         #     else:
+        #         #         vote += x
+        #         # return vote/4
 
 def _cct(arch, pretrained, progress,
          num_layers, num_heads, mlp_ratio, embedding_dim,
@@ -102,6 +144,7 @@ def _cct(arch, pretrained, progress,
                 kernel_size=kernel_size,
                 stride=stride,
                 padding=padding,
+                arch=arch,
                 *args, **kwargs)
 
     if pretrained:
@@ -216,7 +259,7 @@ def cct_6_7x3_224_sine(pretrained=False, progress=False,
 
 @register_model
 def cct_6_7x3_64_sine(pretrained=False, progress=False,
-                       img_size=64, positional_embedding='sine', num_classes=10,need_fc=True,
+                       img_size=64, positional_embedding='sine', num_classes=10,need_fc=False,
                        *args, **kwargs):
     return cct_6('cct_6_7x3_64_sine', pretrained, progress,
                  kernel_size=7, n_conv_layers=3,
@@ -236,40 +279,10 @@ def cct_6_7x3_64(pretrained=False, progress=False,
                  *args, **kwargs)
 
 @register_model
-def cct_6_7x2_64(pretrained=False, progress=False,
-                     img_size=64, positional_embedding='learnable', num_classes=10,
-                     *args, **kwargs):
-        return cct_6('cct_6_7x2_64', pretrained, progress,
-                     kernel_size=7, n_conv_layers=2,
-                     img_size=img_size, positional_embedding=positional_embedding,
-                     num_classes=num_classes,
-                     *args, **kwargs)
-
-@register_model
 def cct_6_3x6_64_sine(pretrained=False, progress=False,
                        img_size=64, positional_embedding='sine', num_classes=10,
                        *args, **kwargs):
     return cct_6('cct_6_3x6_64_sine', pretrained, progress,
-                 kernel_size=3, n_conv_layers=6,
-                 img_size=img_size, positional_embedding=positional_embedding,
-                 num_classes=num_classes,
-                 *args, **kwargs)
-
-@register_model
-def cct_7_3x6_64_sine(pretrained=False, progress=False,
-                       img_size=64, positional_embedding='sine', num_classes=10,
-                       *args, **kwargs):
-    return cct_6('cct_6_3x6_64_sine', pretrained, progress,
-                 kernel_size=3, n_conv_layers=6,
-                 img_size=img_size, positional_embedding=positional_embedding,
-                 num_classes=num_classes,
-                 *args, **kwargs)
-
-@register_model
-def cct_4_3x6_64_sine(pretrained=False, progress=False,
-                      img_size=64, positional_embedding='sine', num_classes=10,
-                      *args, **kwargs):
-    return cct_4('cct_4_3x2_32_sine', pretrained, progress,
                  kernel_size=3, n_conv_layers=6,
                  img_size=img_size, positional_embedding=positional_embedding,
                  num_classes=num_classes,

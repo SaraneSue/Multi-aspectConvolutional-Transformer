@@ -141,7 +141,7 @@ class OneBranch(nn.Module):
         x = self.cnn_layer(x)
         return  x
 
-class MultiViewTransformer(nn.Module):
+class MultiViewConformer(nn.Module):
     def __init__(self, n_input_size=64,
                  n_input_channels=1,
                  n_output_channels=256,
@@ -194,12 +194,12 @@ class MultiViewTransformer(nn.Module):
                 vote = x
             else:
                 vote += x
-        return self.softmax(vote)
+        return self.softmax(vote/4)
 
 if __name__ == "__main__":
     import os
     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = MultiViewTransformer(n_input_size=64, n_input_channels=1, n_output_channels=256).to(device)
+    model = MultiViewConformer(n_input_size=64, n_input_channels=1, n_output_channels=256).to(device)
     x = model.forward(torch.zeros((32, 4, 64, 64)).to(device))
     print(x.shape)
