@@ -16,8 +16,6 @@ from sklearn.metrics import confusion_matrix
 from PIL import Image
 import numpy as np
 
-from noisyTransform import AddNoise, SaltPepperNoise, GaussianNoise
-
 num_epochs = 2000
 learning_rate = 1e-5
 
@@ -26,13 +24,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 # device = 'cpu'
 
 trainTransforms = transforms.Compose([
-        # transforms.RandomResizedCrop(64, scale=(0.9, 1.0), ratio=(0.9, 1.1)),
-        # transforms.RandomHorizontalFlip(),
         transforms.ToTensor(),
-        # transforms.RandomCrop(68),
         transforms.CenterCrop(size=64),
-        # GaussianNoise(var=0.05),
-        # transforms.Resize([64, 64]),
     ])
 
 imagebuffer = {}
@@ -147,11 +140,11 @@ class autoencoder(nn.Module):
         x, pos1 = self.maxpool1(x)
         x = self.encoder2(x)
         x, pos2 = self.maxpool2(x)
-        # x = self.encoder3(x)
-        # x, pos3 = self.maxpool3(x)
+        x = self.encoder3(x)
+        x, pos3 = self.maxpool3(x)
 
-        # x = self.maxunpool0(x, pos3)
-        # x = self.decoder0(x)
+        x = self.maxunpool0(x, pos3)
+        x = self.decoder0(x)
         x = self.maxunpool1(x, pos2)
         x = self.decoder1(x)
         x = self.maxunpool2(x, pos1)
@@ -172,12 +165,10 @@ def draw_image(x):
     img.show()
 
 BATCH_SIZE = 32
-train_data = Dataset('./data/SOC-128/train', transform=trainTransforms)
+train_data = Dataset('./data/SOC/train', transform=trainTransforms)
 train_loader = DataLoader(train_data, batch_size=BATCH_SIZE, shuffle=True)
 
 model = autoencoder().cuda()
-# model.load_state_dict(torch.load('./best_model/conv_autoencoder.pth'))
-# model = torch.load('./best_model/conv_autoencoder.pth')
 criterion = nn.MSELoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=0.9)
 # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5, last_epoch=-1)
