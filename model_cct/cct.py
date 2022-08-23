@@ -66,7 +66,7 @@ class CCT(nn.Module):
                               kernel_size=(1, 1))
         self.softmax = nn.Softmax(dim=1)
 
-        if arch.startswith("cct_6"):
+        if arch.startswith("cct_4"):
             self.tokenizer = resnet18()
             # self.tokenizer = DSnet()
         else:
@@ -84,9 +84,6 @@ class CCT(nn.Module):
                                        conv_bias=False)
 
         self.classifier = TransformerClassifier(
-            # sequence_length=4 if arch.startswith("cct_4") else self.tokenizer.sequence_length(n_channels=n_input_channels,
-            #                                                height=img_size,
-            #                                                width=img_size),
             sequence_length=4,
             embedding_dim=embedding_dim,
             seq_pool=False,
@@ -104,10 +101,7 @@ class CCT(nn.Module):
 
     def forward(self, x):
         x = self.tokenizer(x)
-        # img = Image.fromarray(x.cpu().detach().numpy()[0][0] * 255)
-        # img.show()
         x = self.classifier(x)
-        # return x
 
         allx = x
         batch_size = x.shape[0]
@@ -121,8 +115,6 @@ class CCT(nn.Module):
                 vote = x
             else:
                 vote += x
-        novote = torch.Tensor(novote).transpose(0,1)
-        # return self.conv(vote/4).reshape((batch_size, self.class_num)), novote
         return vote/self.sequence_len
 
 def _cct(arch, pretrained, progress,
