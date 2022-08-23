@@ -27,6 +27,7 @@ class Tokenizer(nn.Module):
                           stride=(stride, stride),
                           padding=(padding, padding), bias=conv_bias),
                 nn.Identity() if activation is None else activation(),
+                # nn.BatchNorm2d(n_filter_list[i + 1]),
                 nn.MaxPool2d(kernel_size=pooling_kernel_size,
                              stride=pooling_stride,
                              padding=pooling_padding) if max_pool else nn.Identity()

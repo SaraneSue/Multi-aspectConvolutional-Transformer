@@ -20,7 +20,7 @@ class VDCNN(nn.Module):
         self.view4_conv1 = nn.Conv2d(1, 16, 6)
         self.view4_conv2 = nn.Conv2d(16, 32, 5)
         self.view4_conv3 = nn.Conv2d(32, 64, 6)
-        self.view1234 = nn.Conv2d(192, 256, 5)
+        self.view1234 = nn.Conv2d(192, 256, 1)
 
         self.fc1 = nn.Linear(256*3*3, 512)
         self.fc2 = nn.Linear(512, num_classes)
@@ -78,7 +78,7 @@ class VDCNN(nn.Module):
         x4 = x4.view(-1, 256*3*3)
         x4 = self.fc1(x4)
         x4 = self.fc2(x4)
-        x4 = self.softmax(x4)
+        # x4 = self.softmax(x4)
         return x4
 
 

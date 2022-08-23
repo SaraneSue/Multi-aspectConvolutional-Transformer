@@ -65,6 +65,7 @@ class BiLSTM(nn.Module):
         cell_state = torch.randn(2*2, batch_size, self.n_hidden).to(device)
 
         outputs, (_, _) = self.lstm(X, (hidden_state, cell_state)) # [seq_len, batch_size, n_hidden*2]
+        outputs = outputs[1:3]
         outputs = torch.mean(outputs, dim=0)  # [batch_size, n_hidden * 2]
         model = self.fc(outputs)  # model : [batch_size, n_class]
         return model
@@ -76,7 +77,7 @@ class BCRN(nn.Module):
         self.num_classes = num_classes
         self.layers = nn.ModuleList([ConvBlock() for _ in range(self.sequenceLen)])
         self.bilstm = BiLSTM(num_classes=self.num_classes)
-        self.softmax = nn.Softmax(dim=0)
+        # self.softmax = nn.Softmax(dim=0)
 
     def forward(self, x):
         shape = list(x.shape)
@@ -84,5 +85,5 @@ class BCRN(nn.Module):
         shape = tuple(shape)
         cnns = torch.stack([self.layers[i](torch.reshape(x[:,i], shape)) for i in range(self.sequenceLen)])
         x = self.bilstm(cnns)
-        x = self.softmax(x)
+        # x = self.softmax(x)
         return x

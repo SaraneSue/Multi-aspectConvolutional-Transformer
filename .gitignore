@@ -4,3 +4,5 @@ zip/
 best_model/
 *.pyc
 .idea/
+model/
+rawdata/

@@ -194,7 +194,7 @@ class MultiViewConformer(nn.Module):
                 vote = x
             else:
                 vote += x
-        return self.softmax(vote/4)
+        return vote/4
 
 if __name__ == "__main__":
     import os
