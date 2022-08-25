@@ -26,6 +26,36 @@ In recent years, synthetic aperture radar (SAR) automatic target recognition (AT
 
 -pillow 8.13.2
 
+## Preparing the data
+
+1.The MSTAR dataset can be downloaded from: https://www.sdms.afrl.af.mil/
+
+2.Run data_processing.py to read the raw data to generate images.
+
+3.Run sequence_construction.py to construct multi-aspect SAR image sequences.
+
+## Training and testing
+
+1.Configure the associated hyperparameters and file paths in the following files:
+
+```
+train.py -- file paths and training parameters
+cct.py -- parameters of the proposed network structure
+encoder_decoder.py -- parameters of the CAE structure
+```
+
+2.Execute the following code to pretrain CAE： 
+
+```bash
+python encoder_decoder.py
+```
+
+3.Execute the following code for training and testing： 
+
+```bash
+python train.py
+```
+
 ## Citation
 
  If you find this repository/work helpful in your research, welcome to cite the paper. 
